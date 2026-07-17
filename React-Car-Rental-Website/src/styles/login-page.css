@@ -1,0 +1,203 @@
+.react-login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #fef2f3 100%);
+  padding: 110px 16px 40px;
+  font-family: "Poppins", sans-serif;
+}
+
+.react-login-wrap {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.react-login-left {
+  text-align: center;
+}
+
+.react-login-left .hero-badge {
+  display: inline-block;
+  background: rgba(232, 25, 44, 0.1);
+  color: #e8192c;
+  border: 1px solid rgba(232, 25, 44, 0.2);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  margin-bottom: 14px;
+}
+
+.react-login-left h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+
+.react-login-left h2 span {
+  color: #e8192c;
+}
+
+.react-login-left p {
+  color: #6c757d;
+  margin: 0 auto 24px;
+  max-width: 480px;
+  font-size: 15px;
+}
+
+.react-login-left img {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.stats-row {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.stats-row strong {
+  display: block;
+  color: #e8192c;
+  font-family: "Montserrat", sans-serif;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.stats-row small {
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.auth-card-react {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 36px 32px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(232, 25, 44, 0.1);
+}
+
+.top-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fef2f3;
+  border: 2px solid rgba(232, 25, 44, 0.2);
+  color: #e8192c;
+  font-weight: 800;
+  font-family: "Montserrat", sans-serif;
+}
+
+.auth-card-react h3 {
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 30px;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.auth-card-react > p {
+  text-align: center;
+  color: #6c757d;
+  margin: 8px 0 18px;
+  font-size: 14px;
+}
+
+.auth-card-react form {
+  display: grid;
+  gap: 8px;
+}
+
+.auth-card-react label {
+  font-size: 14px;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.auth-card-react input[type="email"],
+.auth-card-react input[type="password"] {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-size: 14px;
+  margin-bottom: 8px;
+  outline: none;
+}
+
+.auth-card-react input[type="email"]:focus,
+.auth-card-react input[type="password"]:focus {
+  border-color: #e8192c;
+  box-shadow: 0 0 0 3px rgba(232, 25, 44, 0.1);
+}
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+
+.remember-row input {
+  accent-color: #e8192c;
+}
+
+.remember-row span {
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.auth-card-react button {
+  border: none;
+  border-radius: 999px;
+  background: #e8192c;
+  color: #fff;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+}
+
+.auth-card-react button:hover {
+  background: #c0101f;
+}
+
+.auth-foot {
+  border-top: 1px solid #f0f2f5;
+  margin-top: 18px;
+  padding-top: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.auth-foot a {
+  color: #e8192c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+@media (max-width: 992px) {
+  .react-login-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .react-login-left {
+    display: none;
+  }
+}
