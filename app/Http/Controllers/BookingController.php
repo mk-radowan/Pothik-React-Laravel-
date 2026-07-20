@@ -319,15 +319,33 @@ class BookingController extends Controller
 
     public function history()
     {
+        $user = auth()->user();
         $bookings = Booking::where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pending = $bookings->where('status', 'pending');
-        $approved = $bookings->where('status', 'approved');
-        $rejected = $bookings->where('status', 'rejected');
+        $historyData = [
+            'userName' => $user->name,
+            'userPhotoUrl' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+            'bookings' => $bookings->map(fn($booking) => [
+                'id' => $booking->id,
+                'car_name' => $booking->car_name,
+                'pickup_date' => $booking->pickup_date,
+                'return_date' => $booking->return_date,
+                'total_amount' => $booking->total_amount,
+                'status' => $booking->status,
+                'payment_status' => $booking->payment_status ?? 'unpaid',
+                'paymentUrl' => route('bookings.payment.show', $booking->id),
+                'invoiceUrl' => route('bookings.invoice', $booking->id),
+            ])->values(),
+            'dashboardUrl' => route('dashboard'),
+            'historyUrl' => route('bookings.history'),
+            'profileUrl' => route('profile'),
+            'carsUrl' => route('cars.index'),
+            'logoutUrl' => route('logout'),
+        ];
 
-        return view('bookings.history', compact('bookings', 'pending', 'approved', 'rejected'));
+        return view('customer.bookings.history', compact('historyData'));
     }
 
     public function dashboard()
@@ -336,7 +354,8 @@ class BookingController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        $userId = auth()->id();
+        $user = auth()->user();
+        $userId = $user->id;
 
         $pendingBookings = Booking::where('user_id', $userId)
             ->where('status', 'pending')
@@ -351,6 +370,30 @@ class BookingController extends Controller
 
         $totalBookings = Booking::where('user_id', $userId)->count();
 
-        return view('dashboard', compact('pendingBookings', 'approvedBookings', 'totalBookings'));
+        $dashboardData = [
+            'userName' => $user->name,
+            'userPhotoUrl' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+            'totalBookings' => $totalBookings,
+            'pendingCount' => $pendingBookings->count(),
+            'approvedCount' => $approvedBookings->count(),
+            'pendingBookings' => $pendingBookings->map(fn($booking) => [
+                'car_name' => $booking->car_name,
+                'pickup_date' => $booking->pickup_date,
+                'return_date' => $booking->return_date,
+                'total_amount' => $booking->total_amount,
+            ])->values(),
+            'approvedBookings' => $approvedBookings->map(fn($booking) => [
+                'car_name' => $booking->car_name,
+                'pickup_date' => $booking->pickup_date,
+                'return_date' => $booking->return_date,
+            ])->values(),
+            'dashboardUrl' => route('dashboard'),
+            'historyUrl' => route('bookings.history'),
+            'profileUrl' => route('profile'),
+            'carsUrl' => route('cars.index'),
+            'logoutUrl' => route('logout'),
+        ];
+
+        return view('customer.dashboard', compact('dashboardData'));
     }
 }

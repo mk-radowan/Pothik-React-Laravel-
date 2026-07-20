@@ -54,12 +54,33 @@ class CarController extends Controller
 
         $cars = $query->orderBy('rating', 'desc')->paginate(12);
 
-        return view('cars.index', [
-            'cars' => $cars,
-            'cities' => self::CITIES,
+        $filters = $request->all();
+
+        $carsData = [
+            'cars' => $cars->map(fn($car) => [
+                'id' => $car->id,
+                'brand' => $car->brand,
+                'model' => $car->model,
+                'location' => $car->location,
+                'category' => $car->category,
+                'fuel_type' => $car->fuel_type,
+                'transmission' => $car->transmission,
+                'seats' => $car->seats,
+                'rating' => $car->rating,
+                'availability' => $car->availability,
+                'formatted_price' => $car->formatted_price,
+                'image_url' => $car->image_url,
+                'fallback_image_url' => $car->fallback_image_url,
+                'showUrl' => route('cars.show', $car->id),
+            ])->values(),
+            'total' => $cars->total(),
             'categories' => self::CATEGORIES,
-            'filters' => $request->all(),
-        ]);
+            'filters' => $filters,
+            'indexUrl' => route('cars.index'),
+            'paginationHtml' => $cars->withQueryString()->links()->toHtml(),
+        ];
+
+        return view('cars.index', compact('carsData'));
     }
 
     public function show(string $id)
@@ -67,7 +88,58 @@ class CarController extends Controller
         $car = Car::findOrFail($id);
         $reviews = Review::where('car_id', $id)->orderBy('created_at', 'desc')->get();
 
-        return view('cars.show', compact('car', 'reviews'));
+        $user = auth()->user();
+        $isCustomer = $user && $user->isCustomer();
+        $carDetailsData = [
+            'car' => [
+                'id' => $car->id,
+                'brand' => $car->brand,
+                'model' => $car->model,
+                'display_name' => $car->display_name,
+                'category' => $car->category,
+                'availability' => $car->availability,
+                'location' => $car->location,
+                'formatted_price' => $car->formatted_price,
+                'price_per_day' => $car->price_per_day,
+                'rating' => $car->rating,
+                'fuel_type' => $car->fuel_type,
+                'transmission' => $car->transmission,
+                'seats' => $car->seats,
+                'description' => $car->description,
+                'image_url' => $car->image_url,
+                'fallback_image_url' => $car->fallback_image_url,
+                'is_available' => $car->isAvailable(),
+            ],
+            'reviews' => $reviews->map(fn($review) => [
+                'user_name' => $review->user_name,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+            ])->values(),
+            'isLoggedIn' => (bool) $user,
+            'isCustomer' => (bool) $isCustomer,
+            'canReview' => (bool) $isCustomer,
+            'canBook' => (bool) ($isCustomer && $car->isAvailable()),
+            'homeUrl' => route('home'),
+            'carsUrl' => route('cars.index'),
+            'reviewUrl' => route('reviews.store', $car->id),
+            'bookingUrl' => route('bookings.store', $car->id),
+            'loginUrl' => route('login', ['redirect' => request()->getRequestUri()]),
+            'csrfToken' => csrf_token(),
+            'old' => [
+                'pickup_date' => old('pickup_date', ''),
+                'return_date' => old('return_date', ''),
+                'pickup_location' => old('pickup_location', ''),
+                'dropoff_location' => old('dropoff_location', ''),
+            ],
+            'errors' => [
+                'pickup_date' => session('errors')?->first('pickup_date'),
+                'return_date' => session('errors')?->first('return_date'),
+                'pickup_location' => session('errors')?->first('pickup_location'),
+                'dropoff_location' => session('errors')?->first('dropoff_location'),
+            ],
+        ];
+
+        return view('cars.show', compact('carDetailsData'));
     }
 
     public function home()
@@ -77,8 +149,28 @@ class CarController extends Controller
             ->limit(6)
             ->get();
 
-        $categories = self::CATEGORIES;
+        $homeData = [
+            'categories' => self::CATEGORIES,
+            'featuredCars' => $featuredCars->map(fn($car) => [
+                'id' => $car->id,
+                'brand' => $car->brand,
+                'model' => $car->model,
+                'location' => $car->location,
+                'category' => $car->category,
+                'fuel_type' => $car->fuel_type,
+                'transmission' => $car->transmission,
+                'seats' => $car->seats,
+                'rating' => $car->rating,
+                'availability' => $car->availability,
+                'formatted_price' => $car->formatted_price,
+                'image_url' => $car->image_url,
+                'fallback_image_url' => $car->fallback_image_url,
+                'showUrl' => route('cars.show', $car->id),
+            ])->values(),
+            'carsUrl' => route('cars.index'),
+            'registerUrl' => route('register'),
+        ];
 
-        return view('home', compact('featuredCars', 'categories'));
+        return view('home', compact('homeData'));
     }
 }

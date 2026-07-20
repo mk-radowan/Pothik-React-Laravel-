@@ -15,7 +15,20 @@ class AuthController extends Controller
         if (auth()->check()) {
             return $this->redirectByRole();
         }
-        return view('auth.login');
+
+        $loginData = [
+            'loginUrl' => route('login'),
+            'registerUrl' => route('register'),
+            'csrfToken' => csrf_token(),
+            'redirect' => old('redirect', request('redirect')),
+            'oldEmail' => old('email', ''),
+            'errors' => [
+                'email' => session('errors')?->first('email'),
+                'password' => session('errors')?->first('password'),
+            ],
+        ];
+
+        return view('auth.login', compact('loginData'));
     }
 
     public function login(Request $request)
@@ -65,7 +78,25 @@ class AuthController extends Controller
         if (auth()->check()) {
             return $this->redirectByRole();
         }
-        return view('auth.register');
+
+        $registerData = [
+            'registerUrl' => route('register'),
+            'loginUrl' => route('login'),
+            'csrfToken' => csrf_token(),
+            'old' => [
+                'name' => old('name', ''),
+                'email' => old('email', ''),
+                'phone' => old('phone', ''),
+            ],
+            'errors' => [
+                'name' => session('errors')?->first('name'),
+                'email' => session('errors')?->first('email'),
+                'phone' => session('errors')?->first('phone'),
+                'password' => session('errors')?->first('password'),
+            ],
+        ];
+
+        return view('auth.register', compact('registerData'));
     }
 
     public function register(Request $request)
@@ -74,10 +105,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique(User::class, 'email')],
             'phone' => ['required', 'digits:11'],
-            'phone' => ['max:13'],
-
             'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'role' => ['required', Rule::in(['admin', 'customer'])],
         ]);
 
         $user = User::create([
@@ -85,7 +113,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
+            'role' => 'customer',
         ]);
 
         Auth::login($user);

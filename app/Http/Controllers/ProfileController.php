@@ -6,13 +6,31 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
     public function show()
     {
-        return view('profile.index', ['user' => auth()->user()]);
+        $user = auth()->user();
+        $photoUrl = $user->avatar ? asset('storage/' . $user->avatar) : null;
+
+        $profileData = [
+            'userName' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'roleLabel' => ucfirst($user->role),
+            'userPhotoUrl' => $photoUrl,
+            'dashboardUrl' => route('dashboard'),
+            'historyUrl' => route('bookings.history'),
+            'profileUrl' => route('profile'),
+            'logoutUrl' => route('logout'),
+            'updateUrl' => route('profile.update'),
+            'csrfToken' => csrf_token(),
+        ];
+
+        return view('customer.profile.index', compact('profileData'));
     }
 
     public function update(Request $request)
@@ -24,6 +42,7 @@ class ProfileController extends Controller
             'email' => ['required', 'email', Rule::unique(User::class, 'email')->ignore($user->id)],
             'phone' => ['required', 'string', 'max:15'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $user->name = $validated['name'];
@@ -32,6 +51,13 @@ class ProfileController extends Controller
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $user->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
         $user->save();

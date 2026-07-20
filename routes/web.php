@@ -50,7 +50,7 @@ Route::match(['get', 'post'], '/payments/bkash/callback/{booking}', [BookingCont
     ->name('payments.bkash.callback');
 Route::get('/payments/result/{booking}', [BookingController::class, 'paymentResult'])->name('payments.result');
 
-Route::middleware('auth')->group(function () {
+Route::prefix('customer')->middleware('auth')->group(function () {
     Route::get('/dashboard', [BookingController::class, 'dashboard'])->name('dashboard');
     Route::post('/book/{id}', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{booking}/payment', [BookingController::class, 'showPayment'])->name('bookings.payment.show');

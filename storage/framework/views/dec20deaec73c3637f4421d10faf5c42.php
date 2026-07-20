@@ -4,21 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Pothik Rentals') - Drive with Pothik</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Pothik Rentals'); ?> - Drive with Pothik</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600&display=swap"
         rel="stylesheet">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    @stack('styles')
+    <link href="<?php echo e(asset('css/style.css')); ?>" rel="stylesheet">
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg glass-nav fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">
+            <a class="navbar-brand" href="<?php echo e(route('home')); ?>">
                 <i class="bi bi-car-front-fill"></i>
                 Pothik
             </a>
@@ -27,58 +27,60 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto ms-4">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('cars.index') }}">Browse Cars</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo e(route('home')); ?>">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo e(route('cars.index')); ?>">Browse Cars</a></li>
                 </ul>
                 <ul class="navbar-nav align-items-center gap-1">
-                    @auth
-                        @if (auth()->user()->isAdmin())
-                            <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}"><i
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if(auth()->user()->isAdmin()): ?>
+                            <li class="nav-item"><a class="nav-link" href="<?php echo e(route('admin.dashboard')); ?>"><i
                                         class="bi bi-speedometer2 me-1"></i>Admin Panel</a></li>
-                        @else
-                            <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('bookings.history') }}">My Bookings</a>
+                        <?php else: ?>
+                            <li class="nav-item"><a class="nav-link" href="<?php echo e(route('dashboard')); ?>">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="<?php echo e(route('bookings.history')); ?>">My Bookings</a>
                             </li>
-                        @endif
-                        <li class="nav-item"><a class="nav-link" href="{{ route('profile') }}"><i
+                        <?php endif; ?>
+                        <li class="nav-item"><a class="nav-link" href="<?php echo e(route('profile')); ?>"><i
                                     class="bi bi-person-circle me-1"></i>Profile</a></li>
                         <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                                @csrf
+                            <form action="<?php echo e(route('logout')); ?>" method="POST" class="d-inline">
+                                <?php echo csrf_field(); ?>
                                 <button type="submit" class="btn btn-outline-red btn-sm ms-2">
                                     <i class="bi bi-box-arrow-right"></i> Logout
                                 </button>
                             </form>
                         </li>
-                    @else
-                        <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-primary btn-sm ms-2" href="{{ route('register') }}">
+                    <?php else: ?>
+                        <li class="nav-item"><a class="nav-link" href="<?php echo e(route('login')); ?>">Login</a></li>
+                        <li class="nav-item"><a class="btn btn-primary btn-sm ms-2" href="<?php echo e(route('register')); ?>">
                                 <i class="bi bi-person-plus"></i> Register
                             </a></li>
-                    @endauth
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
     </nav>
 
     <main class="main-content">
-        @if (session('success'))
+        <?php if(session('success')): ?>
             <div class="container mt-4 pt-4">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    <i class="bi bi-check-circle-fill me-2"></i><?php echo e(session('success')); ?>
+
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             </div>
-        @endif
-        @if (session('error'))
+        <?php endif; ?>
+        <?php if(session('error')): ?>
             <div class="container mt-4 pt-4">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo e(session('error')); ?>
+
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             </div>
-        @endif
-        @yield('content')
+        <?php endif; ?>
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <footer class="footer-glass mt-5">
@@ -103,13 +105,13 @@
                     <h6 class="mb-3" style="font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.5px">
                         Quick Links</h6>
                     <ul class="list-unstyled small" style="color:rgba(255,255,255,0.6)">
-                        <li class="mb-2"><a href="{{ route('home') }}" class="text-decoration-none"
+                        <li class="mb-2"><a href="<?php echo e(route('home')); ?>" class="text-decoration-none"
                                 style="color:rgba(255,255,255,0.6)">Home</a></li>
-                        <li class="mb-2"><a href="{{ route('cars.index') }}" class="text-decoration-none"
+                        <li class="mb-2"><a href="<?php echo e(route('cars.index')); ?>" class="text-decoration-none"
                                 style="color:rgba(255,255,255,0.6)">Browse Cars</a></li>
-                        <li class="mb-2"><a href="{{ route('login') }}" class="text-decoration-none"
+                        <li class="mb-2"><a href="<?php echo e(route('login')); ?>" class="text-decoration-none"
                                 style="color:rgba(255,255,255,0.6)">Login</a></li>
-                        <li class="mb-2"><a href="{{ route('register') }}" class="text-decoration-none"
+                        <li class="mb-2"><a href="<?php echo e(route('register')); ?>" class="text-decoration-none"
                                 style="color:rgba(255,255,255,0.6)">Register</a></li>
                     </ul>
                 </div>
@@ -135,13 +137,14 @@
                 </div>
             </div>
             <hr style="border-color:rgba(255,255,255,0.1);margin-top:40px">
-            <p class="text-center small mb-0" style="color:rgba(255,255,255,0.4)">&copy; {{ date('Y') }} Developed by Khandokar Radowan. All rights reserved.</p>
+            <p class="text-center small mb-0" style="color:rgba(255,255,255,0.4)">&copy; <?php echo e(date('Y')); ?> Developed by Khandokar Radowan. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
-    @stack('scripts')
+    <script src="<?php echo e(asset('js/app.js')); ?>"></script>
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
 </html>
+<?php /**PATH /opt/lampp/htdocs/Pothik_React_Laravel/resources/views/layouts/app.blade.php ENDPATH**/ ?>
